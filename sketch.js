@@ -8,11 +8,13 @@ const openai = new OpenAI({
 });
 
 // Update constants
-const GENERATION_INTERVAL = 12000; // Slightly longer pause (12 seconds)
+const GENERATION_INTERVAL = 12000; // 12 seconds between generations
 const MAX_DIALOGUE_LENGTH = 12; // Keep more lines visible
-const TYPING_BASE_SPEED = 60; // Slightly faster base typing
-const PAUSE_BETWEEN_LINES = 1200; // Longer pause between lines
-const FADE_DURATION = 2000; // Longer fade transitions
+const TYPING_BASE_SPEED = 50;      // Slightly faster base typing
+const PAUSE_BETWEEN_LINES = 1500;  // Longer pause between lines
+const FADE_DURATION = 2500;        // Longer fade transitions
+const BREATHING_SPEED = 0.01;      // Slower breathing animation
+const FLOATING_SPEED = 0.008;      // Slower floating animation
 
 // Remove scroll-related variables
 let isLoading = true;
@@ -271,9 +273,10 @@ let typingVariation = 0;
 let pauseStartTime = 0;
 let isPaused = false;
 
-// Add easing functions
+// Add easing functions for smoother animations
 const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
 const easeInOutQuad = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 4;
 
 // Update generateText to handle typing effect
 async function generateText(p) {
@@ -486,17 +489,20 @@ const sketch = p => {
         const lines = currentText.split('\n');
         lines.forEach((line, i) => {
           // Smoother breathing animation
-          const breathe = 1 + 0.02 * Math.sin(p.frameCount * 0.015);
+          const breathe = 1 + 0.015 * Math.sin(p.frameCount * BREATHING_SPEED);
           p.textSize(FONT_SIZE * breathe);
           
-          // Smoother fade in
+          // Enhanced fade in with easing
           const lineStart = i === 0 ? 0 : currentTypingLines[0].length + 1;
           const progress = (currentTypingIndex - lineStart) / line.length;
-          const fadeAlpha = p.map(easeOutCubic(progress), 0, 1, 150, 255);
+          const fadeAlpha = p.map(easeInOutCubic(progress), 0, 1, 100, 255);
           const typingColor = p.color(COLORS.states.typing.color);
           typingColor.setAlpha(fadeAlpha);
+          
+          // Add subtle floating animation
+          const floatY = Math.sin(p.frameCount * FLOATING_SPEED + i * 0.5) * 2;
           p.fill(typingColor);
-          p.text(line, p.width/2, dialogueY + (i * LINE_HEIGHT));
+          p.text(line, p.width/2, dialogueY + (i * LINE_HEIGHT) + floatY);
         });
       }
 
@@ -504,13 +510,12 @@ const sketch = p => {
       const startY = dialogueY + (isTyping ? currentTypingLines.length * LINE_HEIGHT : 0);
       dialogueHistory.forEach((line, i) => {
         const fadeProgress = i / (dialogueHistory.length - 1);
-        // Smoother fade out using easing
         const easeOutAlpha = p.map(
-          easeInOutQuad(1 - fadeProgress), 
-          0, 1, 80, 255
+          easeInOutCubic(1 - fadeProgress), 
+          0, 1, 50, 255
         );
         
-        // Smoother color transition
+        // Enhanced color transition
         const historyColor = p.lerpColor(
           p.color(COLORS.states.fading.start),
           p.color(COLORS.states.fading.end),
@@ -518,8 +523,8 @@ const sketch = p => {
         );
         historyColor.setAlpha(easeOutAlpha);
         
-        // Add subtle floating animation
-        const floatY = Math.sin(p.frameCount * 0.01 + i * 0.5) * 2;
+        // Add subtle floating animation to history
+        const floatY = Math.sin(p.frameCount * FLOATING_SPEED * 0.5 + i * 0.3) * 1.5;
         p.fill(historyColor);
         p.text(line, p.width/2, startY + (i * LINE_HEIGHT) + floatY);
       });
