@@ -33,7 +33,7 @@ const TITLE_Y = 112; // Reduced by 30%
 // Add language configurations
 const LANGUAGES = {
   'Español': {
-    title: ["—¿Olvidaste algo?", "—Si tan solo."],
+    title: ["—¿Olvida usted algo?", "—Ojalá."],
     prompt: `Crea un intercambio minimalista muy corto (2-4 palabras cada uno) en español. Usa guiones largos. Que se sienta como fragmentos:
 
 —¿Dónde lo dejaste?
@@ -42,7 +42,7 @@ const LANGUAGES = {
 Continúa con un breve intercambio. Mantén cada línea bajo 4 palabras. Enfócate en la pérdida, la memoria, la ausencia.`
   },
   'English': {
-    title: ["—Forgetting something?", "—If only."],
+    title: ["—Forgettin' something?", "—If only."],
     prompt: `Create a very short, minimalist exchange (2-4 words each). Use em dashes. Make it feel like fragments:
 
 —Where did you leave it?
@@ -96,8 +96,8 @@ Continue com uma breve troca. Mantenha cada linha com menos de 4 palavras. Foque
 短い会話を続けてください。各行を4語以下に保ってください。喪失、記憶、不在に焦点を当ててください。`
   },
   '中文': {
-    title: ["—忘记什么了？", "—要是能。"],
-    prompt: `用中文创建一个非常简短的对话（每句2-4个字）。使用破折号。让它感觉像片段：
+    title: ["—您忘了？", "—但愿如此！"],
+    prompt: `用中文创建一个非常简短的对话 (每句2-4个字)。使用破折号。让它感觉像片段：
 
 —你把它放在哪里？
 —在记忆的缝隙间。
@@ -257,8 +257,8 @@ const COLORS = {
   }
 };
 
-// Change default language to Spanish
-let currentLanguage = 'Español';
+// Change default language to use the selected language from landing page
+let currentLanguage = localStorage.getItem('selectedLanguage') || 'Español';
 let isStarted = true; // Start immediately
 
 // Add typing effect variables
@@ -313,7 +313,7 @@ async function generateText(p) {
 // Store p5 instance reference
 let p5Instance;
 
-// Update language selection function to use p5 instance
+// Update language selection function to remember user's choice
 function createLanguageMenu(p) {
   const select = document.createElement('select');
   select.style.position = 'fixed';
@@ -342,7 +342,7 @@ function createLanguageMenu(p) {
     const option = document.createElement('option');
     option.value = lang;
     option.text = lang;
-    if (lang === 'Español') {
+    if (lang === currentLanguage) { // Use the stored language
       option.selected = true;
     }
     select.appendChild(option);
@@ -350,6 +350,7 @@ function createLanguageMenu(p) {
   
   select.addEventListener('change', (e) => {
     currentLanguage = e.target.value;
+    localStorage.setItem('selectedLanguage', currentLanguage); // Store the new selection
     dialogueHistory = [];
     generateText(p);
     lastGenerationTime = p.millis();
@@ -399,6 +400,13 @@ function createHomeLink(p) {
     e.preventDefault();
     document.getElementById('app').style.display = 'none';
     document.getElementById('landing').style.display = 'flex';
+    
+    // Reset landing page language to Spanish
+    currentLandingLanguage = 'Español';
+    updateLandingText();
+    
+    // Clear the stored language
+    localStorage.removeItem('selectedLanguage');
   });
   
   document.body.appendChild(homeLink);
