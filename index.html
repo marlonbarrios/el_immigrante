@@ -1,22 +1,202 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Immigrante | An Endless Tale of Memory and Loss</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0d5c63;
+            color: #fffffa;
+            line-height: 1.6;
+        }
 
-    <title>El Immigrante | Cuento Eterno</title>
-    
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-    <script type="module" src="sketch.js"></script>
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #78cdd7;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .quote {
+            font-style: italic;
+            color: #44a1a0;
+            font-size: 1.4rem;
+            margin: 2rem 0;
+            padding-left: 1rem;
+            border-left: 3px solid #247b7b;
+        }
+
+        .enter-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: #44a1a0;
+            color: #fffffa;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1.2rem;
+        }
+
+        .enter-btn:hover {
+            background: #78cdd7;
+            transform: translateY(-2px);
+        }
+
+        .credits {
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .credits a {
+            color: #78cdd7;
+            text-decoration: none;
+        }
+
+        .credits a:hover {
+            text-decoration: underline;
+        }
+
+        #app {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d5c63;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="landing">
+        <h1>El Immigrante</h1>
+        <p class="description">Un microcuento de Luis Felipe Lomelí genera un diálogo infinito.</p>
+        
+        <div class="quote">
+            "—¿Olvidaste algo?<br>
+            —Si tan solo."
+        </div>
+
+        <p class="explanation">A partir de estas dos líneas, la inteligencia artificial crea nuevos pares de frases sobre el exilio, la memoria y la pérdida.</p>
+        
+        <p class="continuation">Un diálogo sin fin que atraviesa idiomas y culturas, explorando la experiencia del desplazamiento.</p>
+
+        <button class="enter-btn" id="startButton">Entrar a la Instalación</button>
+
+        <div class="credits">
+            Creado por <a href="https://github.com/marlonbarrios">Marlon Barrios Solano</a><br>
+            Basado en "El Emigrante" de <a href="https://www.latam.ufl.edu/people/center-based-faculty/luis-felipe-lomeli/" target="_blank">Luis Felipe Lomelí</a>
+        </div>
+    </div>
+
+    <div id="app">
+        <main></main>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
-    <script src="path/to/your/sketch.js"></script>
-  </head>
-  <body>
-  
-   
-    </div> 
-     <main></main>
-  </body>
+    <script type="module">
+        // Only load the sketch when the button is clicked
+        document.getElementById('startButton').addEventListener('click', async () => {
+            document.getElementById('landing').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            
+            // Dynamically import the sketch
+            const sketch = await import('./sketch.js');
+        });
+    </script>
+
+    <script>
+    // Add this before the closing </body> tag
+    const LANDING_TEXT = {
+      'Español': {
+        title: 'El Immigrante',
+        description: 'Un microcuento de Luis Felipe Lomelí genera un diálogo infinito.',
+        quote: ['—¿Olvidaste algo?', '—Si tan solo.'],
+        explanation: 'A partir de estas dos líneas, la inteligencia artificial crea nuevos pares de frases sobre el exilio, la memoria y la pérdida.',
+        continuation: 'Un diálogo sin fin que atraviesa idiomas y culturas, explorando la experiencia del desplazamiento.',
+        button: 'Entrar a la Instalación',
+        credits: 'Creado por',
+        basedOn: 'Basado en "El Emigrante" de <a href="https://www.latam.ufl.edu/people/center-based-faculty/luis-felipe-lomeli/" target="_blank">Luis Felipe Lomelí</a>'
+      },
+      'English': {
+        title: 'El Immigrante',
+        description: 'A microstory by Luis Felipe Lomelí generates an infinite dialogue.',
+        quote: ['—Forgetting something?', '—If only.'],
+        explanation: 'From these two lines, artificial intelligence creates new pairs of sentences about exile, memory, and loss.',
+        continuation: 'An endless dialogue across languages and cultures, exploring the experience of displacement.',
+        button: 'Enter Installation',
+        credits: 'Created by',
+        basedOn: 'Based on "The Emigrant" by <a href="https://www.latam.ufl.edu/people/center-based-faculty/luis-felipe-lomeli/" target="_blank">Luis Felipe Lomelí</a>'
+      }
+      // Add more languages as needed
+    };
+
+    let currentLandingLanguage = 'Español';
+
+    function createLandingLanguageSelector() {
+      const select = document.createElement('select');
+      select.style.position = 'fixed';
+      select.style.top = '20px';
+      select.style.right = '20px';
+      select.style.padding = '8px';
+      select.style.fontSize = '16px';
+      select.style.backgroundColor = '#0d5c63';
+      select.style.color = '#fffffa';
+      select.style.border = '2px solid #78cdd7';
+      select.style.borderRadius = '4px';
+      select.style.cursor = 'pointer';
+
+      Object.keys(LANDING_TEXT).forEach(lang => {
+        const option = document.createElement('option');
+        option.value = lang;
+        option.text = lang;
+        select.appendChild(option);
+      });
+
+      select.addEventListener('change', (e) => {
+        currentLandingLanguage = e.target.value;
+        updateLandingText();
+      });
+
+      document.body.appendChild(select);
+    }
+
+    function updateLandingText() {
+      const text = LANDING_TEXT[currentLandingLanguage];
+      document.querySelector('h1').textContent = text.title;
+      document.querySelector('.description').textContent = text.description;
+      document.querySelector('.quote').innerHTML = `"${text.quote[0]}<br>${text.quote[1]}"`;
+      document.querySelector('.explanation').textContent = text.explanation;
+      document.querySelector('.continuation').textContent = text.continuation;
+      document.querySelector('.enter-btn').textContent = text.button;
+      document.querySelector('.credits').innerHTML = `${text.credits} <a href="https://github.com/marlonbarrios">Marlon Barrios Solano</a><br>${text.basedOn}`;
+    }
+
+    // Initialize language selector
+    createLandingLanguageSelector();
+    </script>
+</body>
 </html>

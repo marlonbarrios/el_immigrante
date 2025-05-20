@@ -364,6 +364,43 @@ const STREAM_SPEED = 2; // Letters per frame
 // Add animation variables
 let fadeStartTime = 0;
 
+// Add this near the top where other UI elements are created
+function createHomeLink(p) {
+  const homeLink = document.createElement('a');
+  homeLink.textContent = '← Home';
+  homeLink.style.position = 'fixed';
+  homeLink.style.top = '20px';
+  homeLink.style.left = '20px';
+  homeLink.style.padding = '8px';
+  homeLink.style.fontSize = '16px';
+  homeLink.style.backgroundColor = COLORS.theme.background;
+  homeLink.style.color = COLORS.theme.text.primary;
+  homeLink.style.border = `2px solid ${COLORS.theme.interactive.hover}`;
+  homeLink.style.borderRadius = '4px';
+  homeLink.style.cursor = 'pointer';
+  homeLink.style.textDecoration = 'none';
+  homeLink.href = '#';
+  
+  // Add hover effects
+  homeLink.addEventListener('mouseover', () => {
+    homeLink.style.borderColor = COLORS.theme.interactive.hover;
+    homeLink.style.color = COLORS.theme.text.secondary;
+  });
+  
+  homeLink.addEventListener('mouseout', () => {
+    homeLink.style.borderColor = COLORS.theme.interactive.focus;
+    homeLink.style.color = COLORS.theme.text.primary;
+  });
+  
+  homeLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+  });
+  
+  document.body.appendChild(homeLink);
+}
+
 const sketch = p => {
   p5Instance = p;  // Store the p5 instance
 
@@ -377,6 +414,7 @@ const sketch = p => {
     p.textSize(FONT_SIZE);
     dialogueHistory = [];
     createLanguageMenu(p);
+    createHomeLink(p);
     
     generateText(p);
     lastGenerationTime = p.millis();
